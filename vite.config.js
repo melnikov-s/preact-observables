@@ -10,15 +10,20 @@ export default defineConfig({
 			name: "preact-observables",
 			fileName: (format) => `preact-observables.${format}.js`,
 		},
-		rollupOptions: {},
+		rollupOptions: {
+			external: ['@preact/signals-core', 'preact', 'nu-observables']
+		},
+		
 	},
 	test: {
 		globals: true,
 		setupFiles: ["./test/setup.ts"],
 		include: [
-			"**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-			"../nu-observables/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+			"./test/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+			"./node_modules/nu-observables/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
 		],
+		exclude: [],
+		environment: 'jsdom'
 	},
 	plugins: [dts()],
 });

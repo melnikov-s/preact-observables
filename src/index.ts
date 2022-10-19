@@ -6,7 +6,34 @@ import {
   getObservable,
   getObservableClassInstance,
   getSource,
+  setAdministrationType,
+  ObjectAdministration,
 } from "nu-observables";
+
+class PreactObjectAdministration<
+  T extends object
+> extends ObjectAdministration<T> {
+  static proxyTraps: ProxyHandler<object> = Object.assign(
+    {},
+    ObjectAdministration.proxyTraps,
+    {
+      get(target, prop, proxy) {
+        if (
+          !(prop in target) &&
+          (typeof prop === "string" || typeof prop === "number") &&
+          String(prop)[0] === "$"
+        ) {
+          return getSignal(proxy, prop.substring(1) as keyof typeof target);
+        }
+
+        return ObjectAdministration.proxyTraps.get?.apply(
+          null,
+          arguments as any
+        );
+      },
+    } as ProxyHandler<object>
+  );
+}
 
 export const graph = createGraph({
   batch,
@@ -37,8 +64,25 @@ export const graph = createGraph({
   },
 });
 
-export function observable<T>(obj: T): T {
-  return getObservable(obj, graph);
+setAdministrationType(
+  { object: PreactObjectAdministration },
+  graph
+);
+
+export function observable<T>(obj: T): T extends
+  | ReadonlyArray<any>
+  | ReadonlyMap<any, any>
+  | ReadonlySet<any>
+  | WeakMap<any, any>
+  | WeakSet<any>
+  ? T
+  : T & {
+      readonly [key in keyof T as T[key] extends object 
+        ? never
+        : `$${string & key}`] 
+        : Signal<T[key]>;
+    } {
+  return getObservable(obj, graph) as any;
 }
 
 export function source<T>(obj: T): T {
@@ -93,8 +137,8 @@ export function getSignal<T extends object>(
         peek: {
           value() {
             return source(obj)[key];
-          }
-        }
+          },
+        },
       });
 
       signalMap.set(node, signal);

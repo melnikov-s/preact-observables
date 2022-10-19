@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "rootDir": "../",
+    "types": ["vitest/globals"],
+    "target": "es2015",
+    "alwaysStrict": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "lib": ["es2015", "DOM"],
+    "strictNullChecks": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "jsxFactory": "createElement",
+    "jsxFragmentFactory": "Fragment"
+  },
+  "include": ["*"],
+  "exclude": ["node_modules"]
+}

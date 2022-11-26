@@ -10,6 +10,8 @@ import {
   ObjectAdministration,
 } from "nu-observables";
 
+export {isObservable} from "nu-observables";
+
 class PreactObjectAdministration<
   T extends object
 > extends ObjectAdministration<T> {

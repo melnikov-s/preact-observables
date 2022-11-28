@@ -71,6 +71,13 @@ setAdministrationType(
   graph
 );
 
+export type PreactObservable<T> = {[key in keyof T]: T[key] extends object ? PreactObservable<T[key]> : T[key] } & {
+      readonly [key in keyof T as T[key] extends object
+        ? never
+        : `$${string & key}`]?
+        : Signal<T[key]>;
+    }
+
 export function observable<T>(obj: T): T extends
   | ReadonlyArray<any>
   | ReadonlyMap<any, any>
@@ -78,17 +85,12 @@ export function observable<T>(obj: T): T extends
   | WeakMap<any, any>
   | WeakSet<any>
   ? T
-  : T & {
-      readonly [key in keyof T as T[key] extends object 
-        ? never
-        : `$${string & key}`] 
-        : Signal<T[key]>;
-    } {
+  : PreactObservable<T> {
   return getObservable(obj, graph) as any;
 }
 
-export function source<T>(obj: T): T {
-  return getSource(obj);
+export function source<T>(obj: PreactObservable<T> | T): T {
+  return getSource(obj) as T;
 }
 
 export class Observable {

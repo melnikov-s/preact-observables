@@ -130,6 +130,8 @@ todos[1].title = "stay at home"; // now only a single div element will update in
 
 _Note: If you already have a property that starts with `$` in your object (eg: `$myProp`) you can access the signal using `$$` (eg: `$$myProp`)._
 
+_typescript Note: Due to typescript limitations all `$` properties have a type of `Signal<*> | undefined` even though they will return a `Signal` at runtime. You will need to use `!` to bypass this. Though if you're only passing them to text nodes and as attributes `!` is not required_
+
 ## Integration with Preact / React
 
 `preact-observables` work with `@preact/signals-core` if you wish to integrate it with preact you will need to `import from '@preact/signals'` somewhere in your code. Likewise with React you'll need to `import from '@preact/signals-react'`.

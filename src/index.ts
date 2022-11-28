@@ -10,7 +10,7 @@ import {
   ObjectAdministration,
 } from "nu-observables";
 
-export {isObservable} from "nu-observables";
+export { isObservable } from "nu-observables";
 
 class PreactObjectAdministration<
   T extends object
@@ -66,19 +66,23 @@ export const graph = createGraph({
   },
 });
 
-setAdministrationType(
-  { object: PreactObjectAdministration },
-  graph
-);
+setAdministrationType({ object: PreactObjectAdministration }, graph);
 
-export type PreactObservable<T> = {[key in keyof T]: T[key] extends object ? PreactObservable<T[key]> : T[key] } & {
-      readonly [key in keyof T as T[key] extends object
-        ? never
-        : `$${string & key}`]?
-        : Signal<T[key]>;
-    }
+export type PreactObservable<T> = {
+  [key in keyof T]: T[key] extends Function
+    ? T[key]
+    : T[key] extends object
+    ? PreactObservable<T[key]>
+    : T[key];
+} & {
+  readonly [key in keyof T as T[key] extends object
+    ? never
+    : `$${string & key}`]?: Signal<T[key]>;
+};
 
-export function observable<T>(obj: T): T extends
+export function observable<T>(
+  obj: T
+): T extends
   | ReadonlyArray<any>
   | ReadonlyMap<any, any>
   | ReadonlySet<any>

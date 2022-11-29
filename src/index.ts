@@ -68,10 +68,15 @@ export const graph = createGraph({
 
 setAdministrationType({ object: PreactObjectAdministration }, graph);
 
-export type PreactObservable<T> = {
-  [key in keyof T]: T[key] extends Function
-    ? T[key]
-    : T[key] extends object
+export type PreactObservable<T> =
+T extends Function ? T :
+T extends Map<infer K, infer V> ? Map<K, PreactObservable<V>> :
+T extends Array<infer V> ? Array<PreactObservable<V>> :
+T extends Set<infer V> ? Set<PreactObservable<V>> :
+T extends WeakSet<infer V> ? WeakSet<PreactObservable<V>> :
+T extends WeakMap<infer K, infer V> ? WeakMap<K, PreactObservable<V>> :
+{
+  [key in keyof T]: T[key] extends object
     ? PreactObservable<T[key]>
     : T[key];
 } & {
@@ -82,14 +87,7 @@ export type PreactObservable<T> = {
 
 export function observable<T>(
   obj: T
-): T extends
-  | ReadonlyArray<any>
-  | ReadonlyMap<any, any>
-  | ReadonlySet<any>
-  | WeakMap<any, any>
-  | WeakSet<any>
-  ? T
-  : PreactObservable<T> {
+): PreactObservable<T> {
   return getObservable(obj, graph) as any;
 }
 
